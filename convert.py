@@ -2,6 +2,7 @@ from openpyxl import Workbook
 import re
 import argparse
 import string 
+import csv
 
 #parse the command line arguments 
 parser = argparse.ArgumentParser()
@@ -49,9 +50,12 @@ dict_priority_sev = {"Unprioritized":"L4",
 				"Critical":"L1",
 				"Blocker":"L1"}
 
+read_data=[]
+with open(filename, 'rb') as f:
+    reader = csv.reader(f)
+    for row in reader:
+        read_data.append(row)
 
-with open(filename, 'r') as f:
-	read_data = f.readlines()
 
 end_row = len(read_data)
 wb2 = Workbook()
@@ -76,7 +80,7 @@ ws2["M1"] = "Reporter"
 
 #Automatically fill columns
 for row in range(start_row, end_row):
-	data = read_data[row-1].split(',')
+	data = read_data[row-1]
 
 	# add data
 	for k in range(0,2):
@@ -90,8 +94,6 @@ for row in range(start_row, end_row):
 		ws2[the_cell] = ""
 	the_cell = "{}{}".format(string.ascii_uppercase[12], row)
 	ws2[the_cell] = data[12]
-
-
 
 
 	severity_cell = "{}{}".format(get_severity_level_column, row)
