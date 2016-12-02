@@ -1,11 +1,12 @@
-from openpyxl import load_workbook
+from openpyxl import Workbook
 import re
 import argparse
+import string 
 
 #parse the command line arguments 
 parser = argparse.ArgumentParser()
 parser.add_argument("input_filename",
-					help="the filename of Excel file to be converted",
+					help="the filename of csv file to be converted",
                     type=str)
 parser.add_argument("-o",
 					"--output",
@@ -15,7 +16,6 @@ args = parser.parse_args()
 
 
 filename = args.input_filename
-
 filename2 = "output.xlsx"
 if args.output:
 	filename2 = args.output
@@ -23,7 +23,7 @@ if args.output:
 
 
 # start row no for the excel 
-start_row = 5
+start_row = 2
 end_row = 1000
 get_severity_level_column = "J"
 root_cause_column = "K"
@@ -37,6 +37,7 @@ default_post_release = "Post-Release"
 default_unknown_root_cause = "UnKnown"
 
 dict_priority_sev = {"Unprioritized":"L4",
+				"Low":"L4",
 				"None":"L4",
 				"Trivial":"L4",
 				"Minor":"L3",
@@ -49,11 +50,50 @@ dict_priority_sev = {"Unprioritized":"L4",
 				"Blocker":"L1"}
 
 
-wb2 = load_workbook(filename)
-ws2 = wb2["general_report"]
+with open(filename, 'r') as f:
+	read_data = f.readlines()
+
+end_row = len(read_data)
+wb2 = Workbook()
+ws2 = wb2.active
+
+# fill the first row
+ws2["A1"] = "Issue Type"
+ws2["B1"] = "Issue key"
+ws2["C1"] = "Summary"
+ws2["D1"] = "Assignee"
+ws2["E1"] = "Priority"
+ws2["F1"] = "Status"
+ws2["G1"] = "Created"
+ws2["H1"] = "Resolution"
+ws2["I1"] = "Resolved"
+ws2["J1"] = "GET Severity Level"
+ws2["K1"] = "Root Cause"
+ws2["L1"] = "When Discovered"
+ws2["M1"] = "Reporter"
+
+
 
 #Automatically fill columns
 for row in range(start_row, end_row):
+	data = read_data[row-1].split(',')
+
+	# add data
+	for k in range(0,2):
+		the_cell = "{}{}".format(string.ascii_uppercase[k], row)
+		ws2[the_cell] = data[k]
+	for k in range(3,10):
+		the_cell = "{}{}".format(string.ascii_uppercase[k-1], row)
+		ws2[the_cell] = data[k]
+	for k in range(10,12):
+		the_cell = "{}{}".format(string.ascii_uppercase[k], row)
+		ws2[the_cell] = ""
+	the_cell = "{}{}".format(string.ascii_uppercase[12], row)
+	ws2[the_cell] = data[12]
+
+
+
+
 	severity_cell = "{}{}".format(get_severity_level_column, row)
 	
 	priority_cell = "{}{}".format(priority_column, row)
@@ -67,6 +107,7 @@ for row in range(start_row, end_row):
 	if the_priority is None:
 		the_priority = "None"
 	the_priority = the_priority.strip()
+	#print the_priority
 	the_severity = dict_priority_sev[the_priority]
 	ws2[severity_cell] = the_severity
 
