@@ -1,10 +1,10 @@
 from openpyxl import Workbook
 import re
 import argparse
-import string 
+import string
 import csv
 
-#parse the command line arguments 
+#parse the command line arguments
 parser = argparse.ArgumentParser()
 parser.add_argument("input_filename",
 					help="the filename of csv file to be converted",
@@ -23,7 +23,7 @@ if args.output:
 
 
 
-# start row no for the excel 
+# start row no for the excel
 start_row = 2
 end_row = 1000
 get_severity_level_column = "J"
@@ -48,13 +48,22 @@ dict_priority_sev = {"Unprioritized":"L4",
 				"Major":"L2",
 				"Urgent":"L1",
 				"Critical":"L1",
+				"Development":"L4",
+				"Canceled":"L4",
+				"Ready to Deploy":"L4",
+				"New Request":"L4",
+				"Deployed":"L4",
+				"Blocked":"L1",
+				"Bug":"L4",
+				"Stakeholder Review":"L3",
+				"QE Hold":"L3",
 				"Blocker":"L1"}
 
 read_data=[]
-with open(filename, 'rb') as f:
+with open(filename, 'rU') as f:
     reader = csv.reader(f)
     for row in reader:
-        read_data.append(row)
+		read_data.append(row)
 
 
 end_row = len(read_data)
@@ -97,9 +106,9 @@ for row in range(start_row, end_row):
 
 
 	severity_cell = "{}{}".format(get_severity_level_column, row)
-	
+
 	priority_cell = "{}{}".format(priority_column, row)
-	
+
 	key_cell = "{}{}".format(key_column, row)
 	if ws2[key_cell].value is None:
 		break
@@ -113,7 +122,7 @@ for row in range(start_row, end_row):
 	the_severity = dict_priority_sev[the_priority]
 	ws2[severity_cell] = the_severity
 
-	# fill when discovered column based on summary column 
+	# fill when discovered column based on summary column
 	summary_cell = "{}{}".format(summary_column, row)
 	when_discovered_cell = "{}{}".format(when_discovered_column, row)
 	the_summary = ws2[summary_cell].value
