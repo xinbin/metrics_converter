@@ -108,6 +108,8 @@ for row in range(start_row, end_row):
 	the_priority = ws2[priority_cell].value
 	if the_priority is None:
 		the_priority = "None"
+	if len(the_priority)==0:
+		the_priority = "None"
 	the_priority = the_priority.strip()
 	#print the_priority
 	the_severity = dict_priority_sev[the_priority]
