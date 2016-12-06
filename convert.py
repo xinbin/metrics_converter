@@ -48,10 +48,19 @@ dict_priority_sev = {"Unprioritized":"L4",
 				"Major":"L2",
 				"Urgent":"L1",
 				"Critical":"L1",
-				"Blocker":"L1"}
+				"Blocker":"L1",
+				"Development":"L4",
+				"Canceled":"L4",
+				"Ready to Deploy":"L4",
+				"New Request":"L4",
+				"Deployed":"L4",
+				"Blocked":"L1",
+				"Bug":"L4",
+				"Stakeholder Review":"L3",
+				"QE Hold":"L3"}
 
 read_data=[]
-with open(filename, 'rb') as f:
+with open(filename, 'rU') as f:
     reader = csv.reader(f)
     for row in reader:
         read_data.append(row)
